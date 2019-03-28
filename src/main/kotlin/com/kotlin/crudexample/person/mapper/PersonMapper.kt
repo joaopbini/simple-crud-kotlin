@@ -8,19 +8,19 @@ import org.springframework.stereotype.Component
 @Component
 class PersonMapper(private val modelMapper: ModelMapper) {
 
-    fun from(person: Person) = modelMapper.map(person, PersonDto::class.java)
+    fun toDto(person: Person) = modelMapper.map(person, PersonDto::class.java)
 
-    fun to(personDto: PersonDto) = modelMapper.map(personDto, Person::class.java)
+    fun fromDto(personDto: PersonDto) = modelMapper.map(personDto, Person::class.java)
 
-    fun fromList(personList: List<Person>): List<PersonDto> {
+    fun toDtoList(personList: List<Person>): List<PersonDto> {
         val personDtoList = mutableListOf<PersonDto>()
-        personList.forEach { personDtoList.add(from(it)) }
+        personList.forEach { personDtoList.add(toDto(it)) }
         return personDtoList
     }
 
-    fun toList(personDtoList: List<PersonDto>): List<Person> {
+    fun fromDtoList(personDtoList: List<PersonDto>): List<Person> {
         val personList = mutableListOf<Person>()
-        personDtoList.forEach { personList.add(to(it)) }
+        personDtoList.forEach { personList.add(fromDto(it)) }
         return personList
     }
 

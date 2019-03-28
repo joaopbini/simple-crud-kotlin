@@ -1,5 +1,6 @@
 package com.kotlin.crudexample.person.service
 
+import com.kotlin.crudexample.exception.PersonException
 import com.kotlin.crudexample.person.dto.PersonDto
 import com.kotlin.crudexample.person.mapper.PersonMapper
 import com.kotlin.crudexample.person.repository.PersonRepository
@@ -9,28 +10,43 @@ import org.springframework.stereotype.Service
 class PersonService(private val personRepository: PersonRepository,
                     private val personMapper: PersonMapper) {
 
-    fun findById(id: Long) = personMapper.from(personRepository.findById(id).get())
+    fun findById(id: Long): PersonDto {
 
-    fun create(personDto: PersonDto) = personMapper.from(personRepository.save(personMapper.to(personDto)))
+        val person = personRepository.findById(id).orElse(null)
+
+        person?.let {
+            return personMapper.toDto(person)
+        }
+
+        throw PersonException("Person not found!")
+    }
+
+    fun create(personDto: PersonDto): PersonDto {
+        val person = personMapper.fromDto(personDto)
+        return personMapper.toDto(personRepository.save(person))
+    }
 
     fun update(personDto: PersonDto): PersonDto {
 
         if (!personRepository.findById(personDto.id).isPresent) {
-            throw RuntimeException("Erroooou")
+            throw PersonException("Person not found!")
         }
 
-        return personMapper.from(personRepository.save(personMapper.to(personDto)))
+        return personMapper.toDto(personRepository.save(personMapper.fromDto(personDto)))
     }
 
     fun delete(id: Long) {
 
-        val person = personRepository.findById(id).get()
+        val person = personRepository.findById(id).orElse(null)
 
-        personRepository.delete(person)
+        person?.let {
+            personRepository.delete(person)
+        }
     }
 
     fun findByNickname(nickname: String): List<PersonDto> {
-        return personMapper.fromList(personRepository.findAllByNickname(nickname))
+        val listPerson = personRepository.findAllByNickname(nickname)
+        return personMapper.toDtoList(listPerson)
     }
 
 }
