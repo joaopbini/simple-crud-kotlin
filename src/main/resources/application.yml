@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5434/crud
+    username: postgres
+    password: 123456
+  profiles:
+    active: ${ACTIVE_PROFILE:dev}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+
+
+---
+spring:
+  profiles: compose
+  datasource:
+    url: jdbc:postgresql://postgres-temperatura:5433/crud
+    username: postgres
+    password: 123456
+---
